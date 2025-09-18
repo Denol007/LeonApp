@@ -55,24 +55,57 @@
 
         // --- Основной компонент приложения ---
         function App() {
+
             const [step, setStep] = React.useState(1);
             const [confidence, setConfidence] = React.useState(0);
             const [isModalOpen, setIsModalOpen] = React.useState(false);
+            const [showAdvice, setShowAdvice] = React.useState(false);
+            const [cucumberRain, setCucumberRain] = React.useState(false);
 
+            // Мемные эмодзи
+            const memeEmojis = ['🥒', '🦁', '😹', '🦄', '🍕', '🦖', '🦆', '🦍', '🦧', '🦚', '🦜', '🦔', '🦕', '🦩', '🦀', '🦑', '🦐', '🦞', '🦦', '🦭', '🦈', '🦓', '🦒', '🦘', '🦡', '🦃', '🦚', '🦜', '🦢', '🦩', '🦥', '🦦', '🦨', '🦩', '🦪', '🦫', '🦭', '🦮', '🦯', '🦰', '🦱', '🦲', '🦳', '🦴', '🦵', '🦶', '🦷', '🦸', '🦹', '🦺', '🦻', '🦼', '🦽', '🦾', '🦿', '🧀', '🧁', '🧃', '🧉', '🧊', '🧋', '🧍', '🧎', '🧏', '🧑', '🧒', '🧓', '🧔', '🧕', '🧖', '🧗', '🧘', '🧙', '🧚', '🧛', '🧜', '🧝', '🧞', '🧟', '🧠', '🧡', '🧢', '🧣', '🧤', '🧥', '🧦', '🧧', '🧨', '🧩', '🧪', '🧫', '🧬', '🧭', '🧮', '🧯', '🧰', '🧱', '🧲', '🧳', '🧴', '🧵', '🧶', '🧷', '🧸', '🧹', '🧺', '🧻', '🧼', '🧽', '🧾', '🧿', '🩰', '🩱', '🩲', '🩳', '🩴', '🩸', '🩹', '🩺', '🪀', '🪁', '🪂', '🪃', '🪄', '🪅', '🪆', '🪐', '🪑', '🪒', '🪓', '🪔', '🪕', '🪖', '🪗', '🪘', '🪙', '🪚', '🪛', '🪜', '🪝', '🪞', '🪟', '🪠', '🪡', '🪢', '🪣', '🪤', '🪥', '🪦', '🪧', '🪨', '🪩', '🪪', '🪫', '🪬', '🪭', '🪮', '🪯', '🪰', '🪱', '🪲', '🪳', '🪴', '🪵', '🪶', '🪷', '🪸', '🪹', '🪺', '🪻', '🪼', '🪽', '🪾', '🪿', '🫀', '🫁', '🫂', '🫃', '🫄', '🫅', '🫐', '🫑', '🫒', '🫓', '🫔', '🫕', '🫖', '🫗', '🫘', '🫙', '🫚', '🫛', '🫠', '🫡', '🫢', '🫣', '🫤', '🫥', '🫦', '🫧', '🫨', '🫰', '🫱', '🫲', '🫳', '🫴', '🫵', '🫶', '🫷', '🫸', '🫹', '🫺', '🫻', '🫼', '🫽', '🫾', '🫿'];
+            function getRandomMemeEmoji() {
+                return memeEmojis[Math.floor(Math.random() * memeEmojis.length)];
+            }
+
+            // Новые прикольные сообщения
             const messages = [
                 "Ты красавчик, особенно на фоне других!", "Я бы тебе точно дал(а)!",
                 "Эвелина уже ждет твоего сообщения!", "Ты сможешь, просто начни!",
                 "Представь, как она улыбнется тебе в ответ!", "Ты лучше всех, кто вокруг нее!",
-                "Сделай это ради себя!", "Через 5 минут ты будешь гордиться собой!"
+                "Сделай это ради себя!", "Через 5 минут ты будешь гордиться собой!",
+                "🥒 Огурец — твой тотем!", "🦁 Леон, ты лев!", "😹 Мяу!", "🦄 Верь в единорогов!",
+                "🍕 Пицца — залог успеха!", "🦖 Покажи свой динозавр!", "🦆 Кря-кря, Леон!"
             ];
-            
-            const [currentMessageIndex, setCurrentMessageIndex] = React.useState(0);
-            const typedMessage = useTypingEffect(messages[currentMessageIndex], 50);
+
+            // Советы Леона
+            const advices = [
+                "Не забудь улыбнуться! 😁",
+                "Сделай комплимент — это работает!",
+                "Если не знаешь, что сказать — пошути!",
+                "Главное — не бойся быть собой!",
+                "Падающие огурцы — к успеху! 🥒",
+                "Леон, ты топ!"
+            ];
+            const [advice, setAdvice] = React.useState(advices[0]);
+
+            // Огуречный дождь
+            React.useEffect(() => {
+                let rainTimeout;
+                if (cucumberRain) {
+                    rainTimeout = setTimeout(() => setCucumberRain(false), 3000);
+                }
+                return () => clearTimeout(rainTimeout);
+            }, [cucumberRain]);
+
+            // ...existing code...
+
 
             React.useEffect(() => {
                 if (confidence === 100) {
                     playSuccessSound();
                     setTimeout(() => setStep(3), 1000);
+                    setCucumberRain(true); // запускаем дождь из огурцов
                 }
             }, [confidence]);
 
@@ -124,6 +157,23 @@
 
             return (
                 <div className="min-h-screen bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600 flex flex-col items-center justify-center p-4 relative overflow-hidden font-sans">
+                    {/* --- Огуречный дождь --- */}
+                    {cucumberRain && (
+                        <div className="pointer-events-none fixed inset-0 z-50">
+                            {[...Array(20)].map((_, i) => (
+                                <span key={i} style={{
+                                    position: 'absolute',
+                                    left: `${Math.random() * 100}%`,
+                                    top: `${Math.random() * 100}%`,
+                                    fontSize: `${24 + Math.random() * 32}px`,
+                                    animation: `fall${i} 2s linear`,
+                                }}>
+                                    🥒
+                                </span>
+                            ))}
+                            <style>{[...Array(20)].map((_, i) => `@keyframes fall${i} {0%{transform:translateY(-100px);}100%{transform:translateY(100vh);}}`).join(' ')}</style>
+                        </div>
+                    )}
                     {/* --- Модальное окно с идеями для сообщений --- */}
                     {isModalOpen && (
                         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setIsModalOpen(false)}>
@@ -147,8 +197,15 @@
                     </div>
                     
                     <div className="w-full text-center mb-8 z-10">
-                        <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-lg">Леон, ты сможешь!</h1>
+                        <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-lg">Леон, ты сможешь! {getRandomMemeEmoji()}</h1>
                         <p className="text-lg text-white opacity-90">Помощник для подката к Эвелине</p>
+                        <button onClick={() => {setAdvice(advices[Math.floor(Math.random()*advices.length)]);setShowAdvice(true);playClickSound();}} className="mt-4 bg-yellow-300 text-black font-bold py-2 px-6 rounded-full shadow hover:bg-yellow-400 transition">Случайный совет Леона</button>
+                        {showAdvice && (
+                            <div className="mt-4 bg-white/80 rounded-xl p-4 text-lg font-semibold text-gray-800 shadow-lg animate-bounce">
+                                {advice}
+                                <button onClick={()=>setShowAdvice(false)} className="ml-4 text-xs text-gray-500">Закрыть</button>
+                            </div>
+                        )}
                     </div>
                     
                     <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 w-full max-w-md shadow-2xl z-10 min-h-[400px] flex items-center justify-center">
