@@ -21,7 +21,6 @@
         // --- Звуковые эффекты ---
         const synth = new Tone.Synth().toDestination();
         const playClickSound = () => {
-            // Запускаем звук только после взаимодействия пользователя
             if (Tone.context.state !== 'running') {
                 Tone.context.resume();
             }
@@ -55,20 +54,16 @@
 
         // --- Основной компонент приложения ---
         function App() {
-
             const [step, setStep] = React.useState(1);
             const [confidence, setConfidence] = React.useState(0);
             const [isModalOpen, setIsModalOpen] = React.useState(false);
             const [showAdvice, setShowAdvice] = React.useState(false);
             const [cucumberRain, setCucumberRain] = React.useState(false);
 
-            // Мемные эмодзи
-            const memeEmojis = ['🥒', '🦁', '😹', '🦄', '🍕', '🦖', '🦆', '🦍', '🦧', '🦚', '🦜', '🦔', '🦕', '🦩', '🦀', '🦑', '🦐', '🦞', '🦦', '🦭', '🦈', '🦓', '🦒', '🦘', '🦡', '🦃', '🦚', '🦜', '🦢', '🦩', '🦥', '🦦', '🦨', '🦩', '🦪', '🦫', '🦭', '🦮', '🦯', '🦰', '🦱', '🦲', '🦳', '🦴', '🦵', '🦶', '🦷', '🦸', '🦹', '🦺', '🦻', '🦼', '🦽', '🦾', '🦿', '🧀', '🧁', '🧃', '🧉', '🧊', '🧋', '🧍', '🧎', '🧏', '🧑', '🧒', '🧓', '🧔', '🧕', '🧖', '🧗', '🧘', '🧙', '🧚', '🧛', '🧜', '🧝', '🧞', '🧟', '🧠', '🧡', '🧢', '🧣', '🧤', '🧥', '🧦', '🧧', '🧨', '🧩', '🧪', '🧫', '🧬', '🧭', '🧮', '🧯', '🧰', '🧱', '🧲', '🧳', '🧴', '🧵', '🧶', '🧷', '🧸', '🧹', '🧺', '🧻', '🧼', '🧽', '🧾', '🧿', '🩰', '🩱', '🩲', '🩳', '🩴', '🩸', '🩹', '🩺', '🪀', '🪁', '🪂', '🪃', '🪄', '🪅', '🪆', '🪐', '🪑', '🪒', '🪓', '🪔', '🪕', '🪖', '🪗', '🪘', '🪙', '🪚', '🪛', '🪜', '🪝', '🪞', '🪟', '🪠', '🪡', '🪢', '🪣', '🪤', '🪥', '🪦', '🪧', '🪨', '🪩', '🪪', '🪫', '🪬', '🪭', '🪮', '🪯', '🪰', '🪱', '🪲', '🪳', '🪴', '🪵', '🪶', '🪷', '🪸', '🪹', '🪺', '🪻', '🪼', '🪽', '🪾', '🪿', '🫀', '🫁', '🫂', '🫃', '🫄', '🫅', '🫐', '🫑', '🫒', '🫓', '🫔', '🫕', '🫖', '🫗', '🫘', '🫙', '🫚', '🫛', '🫠', '🫡', '🫢', '🫣', '🫤', '🫥', '🫦', '🫧', '🫨', '🫰', '🫱', '🫲', '🫳', '🫴', '🫵', '🫶', '🫷', '🫸', '🫹', '🫺', '🫻', '🫼', '🫽', '🫾', '🫿'];
-            function getRandomMemeEmoji() {
-                return memeEmojis[Math.floor(Math.random() * memeEmojis.length)];
-            }
-
-            // Новые прикольные сообщения
+            // --- Массивы с данными ---
+            const memeEmojis = ['🥒', '🦁', '😹', '🦄', '🍕', '🦖', '🦆', '🦍', '🦧', '🔥', '😎', '🚀'];
+            const getRandomMemeEmoji = () => memeEmojis[Math.floor(Math.random() * memeEmojis.length)];
+            
             const messages = [
                 "Ты красавчик, особенно на фоне других!", "Я бы тебе точно дал(а)!",
                 "Эвелина уже ждет твоего сообщения!", "Ты сможешь, просто начни!",
@@ -77,40 +72,28 @@
                 "🥒 Огурец — твой тотем!", "🦁 Леон, ты лев!", "😹 Мяу!", "🦄 Верь в единорогов!",
                 "🍕 Пицца — залог успеха!", "🦖 Покажи свой динозавр!", "🦆 Кря-кря, Леон!"
             ];
-
-            // Советы Леона
+            
             const advices = [
-                "Не забудь улыбнуться! 😁",
-                "Сделай комплимент — это работает!",
-                "Если не знаешь, что сказать — пошути!",
-                "Главное — не бойся быть собой!",
-                "Падающие огурцы — к успеху! 🥒",
-                "Леон, ты топ!"
+                "Не забудь улыбнуться! 😁", "Сделай комплимент — это работает!",
+                "Если не знаешь, что сказать — пошути!", "Главное — не бойся быть собой!",
+                "Падающие огурцы — к успеху! 🥒", "Леон, ты топ!"
             ];
+            
             const [advice, setAdvice] = React.useState(advices[0]);
+            const [currentMessageIndex, setCurrentMessageIndex] = React.useState(0);
+            const typedMessage = useTypingEffect(messages[currentMessageIndex], 50);
 
-            // Огуречный дождь
-            React.useEffect(() => {
-                let rainTimeout;
-                if (cucumberRain) {
-                    rainTimeout = setTimeout(() => setCucumberRain(false), 3000);
-                }
-                return () => clearTimeout(rainTimeout);
-            }, [cucumberRain]);
-
-            // ...existing code...
-
-
+            // --- Эффекты ---
             React.useEffect(() => {
                 if (confidence === 100) {
                     playSuccessSound();
+                    setCucumberRain(true);
                     setTimeout(() => setStep(3), 1000);
-                    setCucumberRain(true); // запускаем дождь из огурцов
                 }
             }, [confidence]);
 
             React.useEffect(() => {
-                if (step === 4) { // Смена сообщений на шаге 4
+                if (step === 4) {
                     const interval = setInterval(() => {
                         setCurrentMessageIndex(prev => (prev + 1) % messages.length);
                     }, 4000);
@@ -118,71 +101,63 @@
                 }
             }, [step, messages.length]);
 
+            React.useEffect(() => {
+                let rainTimeout;
+                if (cucumberRain) {
+                    rainTimeout = setTimeout(() => setCucumberRain(false), 4000);
+                }
+                return () => clearTimeout(rainTimeout);
+            }, [cucumberRain]);
+
+            // --- Обработчики событий ---
             const handleConfidenceBoost = () => {
                 playBoostSound();
                 setConfidence(prev => Math.min(prev + 25, 100));
             };
-            
+
             const openTelegram = (message = "Привет! 😉") => {
                 playClickSound();
                 const url = `https://t.me/malinka_eva?text=${encodeURIComponent(message)}`;
                 window.open(url, '_blank');
             };
-            
+
             const restart = () => {
                 playClickSound();
                 setStep(1);
                 setConfidence(0);
                 setCurrentMessageIndex(0);
+                setShowAdvice(false);
             };
-            
-            const getConfidenceFeedback = () => {
-                if (confidence <= 25) return { emoji: '🤔', text: 'Нужно больше золота...' };
-                if (confidence <= 50) return { emoji: '🙂', text: 'Уже теплее!' };
-                if (confidence <= 75) return { emoji: '😎', text: 'Почти готов!' };
-                return { emoji: '🔥', text: 'ТЫ В ОГНЕ!' };
-            };
-            
+
             const handleNextStep = () => {
                 playClickSound();
                 setStep(prev => prev + 1);
             };
-
-            const suggestionMessages = [
-                "Привет! Увидел твой профиль и не смог пройти мимо 😊",
-                "Привет! Как насчет того, чтобы скрасить этот день общением?)",
-                "Привет! 😉 Мне кажется, у нас может найтись много общего.",
-                "Привет, Эвелина! У тебя очень крутые фотки."
-            ];
+            
+            const handleShowAdvice = () => {
+                playClickSound();
+                setAdvice(advices[Math.floor(Math.random() * advices.length)]);
+                setShowAdvice(true);
+            };
 
             return (
                 <div className="min-h-screen bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600 flex flex-col items-center justify-center p-4 relative overflow-hidden font-sans">
-                    {/* --- Огуречный дождь --- */}
-                    {cucumberRain && (
-                        <div className="pointer-events-none fixed inset-0 z-50">
-                            {[...Array(20)].map((_, i) => (
-                                <span key={i} style={{
-                                    position: 'absolute',
-                                    left: `${Math.random() * 100}%`,
-                                    top: `${Math.random() * 100}%`,
-                                    fontSize: `${24 + Math.random() * 32}px`,
-                                    animation: `fall${i} 2s linear`,
-                                }}>
-                                    🥒
-                                </span>
-                            ))}
-                            <style>{[...Array(20)].map((_, i) => `@keyframes fall${i} {0%{transform:translateY(-100px);}100%{transform:translateY(100vh);}}`).join(' ')}</style>
+                    {/* Огуречный дождь */}
+                    {cucumberRain && [...Array(30)].map((_, i) => (
+                        <div key={i} className="absolute animate-fall" style={{ left: `${Math.random() * 100}%`, animationDuration: `${2 + Math.random() * 2}s`, animationDelay: `${Math.random() * 2}s` }}>
+                            <span style={{ fontSize: `${20 + Math.random() * 24}px` }}>🥒</span>
                         </div>
-                    )}
+                    ))}
+                    <style>{`@keyframes fall { 0% { transform: translateY(-100px) rotate(0deg); } 100% { transform: translateY(100vh) rotate(360deg); } } .animate-fall { animation-name: fall; animation-timing-function: linear; }`}</style>
 
-                    {/* --- Модальное окно с идеями для сообщений --- */}
+                    {/* Модальное окно */}
                     {isModalOpen && (
                         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setIsModalOpen(false)}>
                             <div className="bg-white rounded-2xl p-6 w-full max-w-sm" onClick={e => e.stopPropagation()}>
                                 <h3 className="text-xl font-bold text-gray-800 mb-4">Идеи для первого сообщения:</h3>
                                 <div className="space-y-3">
-                                    {suggestionMessages.map((msg, index) => (
-                                        <button key={index} onClick={() => {openTelegram(msg); setIsModalOpen(false);}} className="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-purple-100 transition">
+                                    {["Привет! Увидел твой профиль и не смог пройти мимо 😊", "Привет! Как насчет того, чтобы скрасить этот день общением?)", "Привет! 😉 Мне кажется, у нас может найтись много общего."].map((msg, index) => (
+                                        <button key={index} onClick={() => { openTelegram(msg); setIsModalOpen(false); }} className="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-purple-100 transition">
                                             {msg}
                                         </button>
                                     ))}
@@ -192,51 +167,41 @@
                         </div>
                     )}
 
-                    {/* --- Фоновые анимации --- */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                        <div className="absolute -top-10 -left-10 w-32 h-32 bg-white rounded-full opacity-20 animate-bounce"></div>
-                        <div className="absolute top-1/4 right-0 w-24 h-24 bg-white rounded-full opacity-30 animate-pulse"></div>
-                    </div>
-
-                    {/* --- Заголовок и совет Леона --- */}
+                    {/* Заголовок и Совет */}
                     <div className="w-full text-center mb-8 z-10">
                         <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-lg">Леон, ты сможешь! {getRandomMemeEmoji()}</h1>
                         <p className="text-lg text-white opacity-90">Помощник для подката к Эвелине</p>
-                        {!isModalOpen && (
-                            <>
-                                <button onClick={() => {setAdvice(advices[Math.floor(Math.random()*advices.length)]);setShowAdvice(true);playClickSound();}} className="mt-4 bg-yellow-300 text-black font-bold py-2 px-6 rounded-full shadow hover:bg-yellow-400 transition">Случайный совет Леона</button>
-                                {showAdvice && (
-                                    <div className="mt-4 bg-white/80 rounded-xl p-4 text-lg font-semibold text-gray-800 shadow-lg animate-bounce">
-                                        {advice}
-                                        <button onClick={()=>setShowAdvice(false)} className="ml-4 text-xs text-gray-500">Закрыть</button>
-                                    </div>
-                                )}
-                            </>
+                        <button onClick={handleShowAdvice} className="mt-4 bg-yellow-300 text-black font-bold py-2 px-6 rounded-full shadow hover:bg-yellow-400 transition transform hover:scale-105">
+                            Случайный совет Леона
+                        </button>
+                        {showAdvice && (
+                            <div className="mt-4 bg-white/80 rounded-xl p-4 text-lg font-semibold text-gray-800 shadow-lg relative">
+                                {advice}
+                                <button onClick={() => setShowAdvice(false)} className="absolute top-1 right-2 text-gray-500 hover:text-gray-800">×</button>
+                            </div>
                         )}
                     </div>
                     
+                    {/* Основной контейнер */}
                     <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 w-full max-w-md shadow-2xl z-10 min-h-[400px] flex items-center justify-center">
+                        {/* Здесь все шаги, как и раньше */}
                         {step === 1 && (
                             <div className="w-full text-center">
-                                <div className="w-24 h-24 bg-gradient-to-br from-pink-400 to-purple-600 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-                                </div>
-                                <h2 className="text-2xl font-bold text-gray-800 mb-4">Леон, ты ссыкло?</h2>
+                                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Леон, ты ссыкло?</h2>
                                 <p className="text-gray-600 mb-8">Не переживай, это нормально! Сейчас мы это исправим.</p>
                                 <button onClick={handleNextStep} className="bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
                                     Я готов начать!
                                 </button>
                             </div>
                         )}
-                        
-                        {step === 2 && (
+                         {step === 2 && (
                             <div className="w-full text-center">
                                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Повысь свою уверенность!</h2>
                                 <div className="mb-6">
                                     <div className="w-full bg-gray-200 rounded-full h-4 mb-2 overflow-hidden">
                                         <div className="bg-gradient-to-r from-pink-500 to-purple-600 h-4 rounded-full transition-all duration-500 ease-out" style={{width: `${confidence}%`}}></div>
                                     </div>
-                                    <p className="text-lg font-bold text-gray-700">{getConfidenceFeedback().emoji} {getConfidenceFeedback().text}</p>
+                                    <p className="text-lg font-bold text-gray-700">{confidence <= 25 ? '🤔 Нужно больше золота...' : confidence <= 50 ? '🙂 Уже теплее!' : confidence <= 75 ? '😎 Почти готов!' : '🔥 ТЫ В ОГНЕ!'}</p>
                                 </div>
                                 <p className="text-gray-600 mb-8">Нажимай, чтобы зарядиться!</p>
                                 <button onClick={handleConfidenceBoost} disabled={confidence >= 100} className={`font-bold py-3 px-8 rounded-full text-lg shadow-lg transform transition-all duration-300 w-full ${confidence >= 100 ? 'bg-green-500 text-white animate-pulse' : 'bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:scale-105 hover:shadow-xl'}`}>
@@ -244,12 +209,10 @@
                                 </button>
                             </div>
                         )}
-
                         {step === 3 && <Checklist onComplete={() => setStep(4)} />}
-                        
                         {step === 4 && (
-                            <div className="w-full text-center">
-                                <div className="w-16 h-16 bg-green-500 rounded-full mx-auto mb-6 flex items-center justify-center animate-bounce shadow-lg"><svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
+                             <div className="w-full text-center">
+                                <div className="w-16 h-16 bg-green-500 rounded-full mx-auto mb-6 flex items-center justify-center animate-bounce shadow-lg"><svg xmlns="http://www.w.3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
                                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Ты готов!</h2>
                                 <div className="bg-gradient-to-r from-pink-100 to-purple-100 rounded-2xl p-4 mb-6 min-h-[80px] flex items-center justify-center">
                                     <p className="text-lg font-semibold text-gray-800">{typedMessage}</p>
@@ -259,10 +222,8 @@
                                 </button>
                             </div>
                         )}
-                        
                         {step === 5 && (
                             <div className="w-full text-center">
-                                <div className="w-24 h-24 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mx-auto mb-6 flex items-center justify-center animate-pulse shadow-lg"><svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg></div>
                                 <h2 className="text-3xl font-bold text-gray-800 mb-2">Ты сделал это!</h2>
                                 <p className="text-xl font-bold text-green-600 mb-6">ЛЕОН - КРАСАВЧИК!</p>
                                 <p className="text-gray-600 mb-6">Ты уже победитель! Нажми, чтобы открыть чат.</p>
