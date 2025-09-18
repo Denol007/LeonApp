@@ -88,7 +88,9 @@
             };
 
             const openTelegram = () => {
-                window.open('https://t.me/malinka_eva', '_blank');
+                const message = "Привет! 😉";
+                const url = `https://t.me/malinka_eva?text=${encodeURIComponent(message)}`;
+                window.open(url, '_blank');
             };
             
             const restart = () => {
@@ -166,7 +168,7 @@
                                 <div className="w-24 h-24 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mx-auto mb-6 flex items-center justify-center animate-pulse shadow-lg"><svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg></div>
                                 <h2 className="text-3xl font-bold text-gray-800 mb-2">Ты сделал это!</h2>
                                 <p className="text-xl font-bold text-green-600 mb-6">ЛЕОН - КРАСАВЧИК!</p>
-                                <p className="text-gray-600 mb-6">Ты уже победитель! Теперь нажми, чтобы открыть чат с Эвелиной.</p>
+                                <p className="text-gray-600 mb-6">Ты уже победитель! Нажми, чтобы открыть чат с готовым первым сообщением!</p>
                                 <button onClick={openTelegram} className="mb-6 w-full bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg hover:bg-blue-600 transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.58c-.28 1.13-1.04 1.4-1.74.88L14.25 16l-2.64 2.54c-.3.29-.5.42-.87.42z"/></svg>
                                     Написать в Telegram
@@ -190,3 +192,4 @@
     </script>
 </body>
 </html>
+
